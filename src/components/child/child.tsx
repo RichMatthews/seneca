@@ -2,29 +2,13 @@ import React, { useEffect, useState } from 'react'
 
 import { BACKGROUND_COLORS } from '../../constants/background-colors'
 
+import { ChildProps, CorrectAnswersState, SetAnswerParams, SelectedAnswersState } from './types'
 import './index.css'
 
-interface ChildProps {
-    question: any
-    setBackground: (bgColor: string) => void
-}
-
-interface SelectedAnswersState {}
-interface CorrectAnswersState {}
-
-interface SetAnswerParams {
-    choice: {
-        showLeft: string
-        showRight: string
-    }
-    index: number
-    side: string
-}
-
 export const Child = ({ question, setBackground }: ChildProps) => {
-    const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswersState | []>([])
-    const [correctAnswers, setCorrectAnswers] = useState<CorrectAnswersState | []>([])
-    const [locked, setLocked] = useState(false)
+    const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswersState[]>([])
+    const [correctAnswers, setCorrectAnswers] = useState<CorrectAnswersState[]>([])
+    const [allAnswersCorrect, setAllAnswersCorrect] = useState<boolean>(false)
 
     useEffect(() => {
         setCorrectAnswers(question.choices.map((choice: any) => choice.correct))
@@ -32,7 +16,7 @@ export const Child = ({ question, setBackground }: ChildProps) => {
     }, [question])
 
     const setAnswer = ({ choice, index, side }: SetAnswerParams) => {
-        if (locked) return
+        if (allAnswersCorrect) return
         let copy: any = [...selectedAnswers]
         if (side === 'right') {
             copy[index].selected = choice.showRight
@@ -43,39 +27,34 @@ export const Child = ({ question, setBackground }: ChildProps) => {
 
         setBackground(BACKGROUND_COLORS[calculateCorrectAnswers()])
         if (calculateCorrectAnswers() === 100) {
-            setLocked(true)
+            setAllAnswersCorrect(true)
         }
     }
 
     const calculateCorrectAnswers = () => {
-        console.log(selectedAnswers, 'sa')
-        const selectedAnswersX = selectedAnswers.map((answer: any) => answer.selected)
-        let correctAnswersTotal = 0
-        selectedAnswersX.forEach((answer, index) => {
-            if (answer === correctAnswers[index]) {
-                correctAnswersTotal += 1
-            }
-        })
-        return (correctAnswersTotal / selectedAnswersX.length) * 100
+        let correctAnswersTotal: number = 0
+        selectedAnswers
+            .map((answer: SelectedAnswersState) => answer.selected)
+            .forEach((answer: string, index: number) => {
+                if (answer === correctAnswers[index]) {
+                    correctAnswersTotal += 1
+                }
+            })
+        return (correctAnswersTotal / selectedAnswers.length) * 100
     }
 
-    const calculateWhichClassToUse = ({ choice }: any) => {
-        const copy = [...selectedAnswers]
-
+    const calculateWhichClassToUse = ({ choice }: { choice: { selected: string; showRight: string } }) => {
         if (choice.selected === choice.showRight) {
             return 'highlighted-choice highlighted-choice-right'
         }
         return 'highlighted-choice highlighted-choice-left'
-        // `highlighted-choice ${
-        //   move ? "highlighted-choice-right" : "highlighted-choice-left"
-        // }`
     }
 
     return (
         <div className="container">
             <div className="title">{question.title}:</div>
             <div>
-                {selectedAnswers.map((choice: any, index: number) => (
+                {selectedAnswers.map((choice: SelectedAnswersState, index: number) => (
                     <div className="choices-container">
                         <div className="choice-selected" onClick={() => setAnswer({ choice, index, side: 'left' })}>
                             {choice.showLeft}
@@ -90,7 +69,7 @@ export const Child = ({ question, setBackground }: ChildProps) => {
                     </div>
                 ))}
             </div>
-            <div>The answer is {locked ? 'correct' : 'incorrect'}</div>
+            <div>The answer is {allAnswersCorrect ? 'correct' : 'incorrect'}</div>
         </div>
     )
 }
