@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { Data } from './components/data'
+import { QuestionViewContainer } from './components/question-view-container'
 
-ReactDOM.render(<Data />, document.getElementById('root'))
+ReactDOM.render(<QuestionViewContainer />, document.getElementById('root'))
