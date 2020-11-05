@@ -11,6 +11,7 @@ export const QuestionViewContainer = () => {
     const [background, setBackground] = useState<string>(calculateBackgroundColor(0))
     const [question, setQuestion] = useState<number>(0)
     const [questions, setQuestions] = useState<any>([])
+    const [correctAnswers, setCorrectAnswers] = useState<any[]>([])
 
     useEffect(() => {
         // would normally use this to fetch data from an API normally but as this is just a FE task data is hardcoded above
@@ -28,6 +29,27 @@ export const QuestionViewContainer = () => {
         })
 
         setQuestions(shuffleChoicesAndAddInitialSelectedChoice)
+        setCorrectAnswers(shuffleChoicesAndAddInitialSelectedChoice.map((choice: any) => choice.correct))
+        const x = calculateCorrectAnswers(
+            shuffleChoicesAndAddInitialSelectedChoice.map((choice: any) => choice.selected),
+            shuffleChoicesAndAddInitialSelectedChoice.map((choice: any) => choice.correct),
+        )
+
+        // call the function again if answers are higher than 50% as too many are correct from the start
+        if (x > 50) {
+            randomizeChoices()
+        }
+    }
+
+    const calculateCorrectAnswers = (sa: any, ca: any) => {
+        let correctAnswersTotal: number = 0
+        sa.map((answer: any) => answer).forEach((answer: string, index: number) => {
+            if (answer === ca[index]) {
+                correctAnswersTotal += 1
+            }
+        })
+
+        return (correctAnswersTotal / sa.length) * 100
     }
 
     // obviously all the below stuff is a bit hacky but wanted to give an easy way of showing this is built in a reusable way
@@ -42,7 +64,7 @@ export const QuestionViewContainer = () => {
                     Office
                 </div>
             </div>
-            <QuestionView question={questions} setBackground={setBackground} />
+            <QuestionView correctAnswers={correctAnswers} question={questions} setBackground={setBackground} />
         </div>
     )
 }

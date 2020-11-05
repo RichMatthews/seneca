@@ -13,6 +13,10 @@
     width: 500px;
 }
 
+.text-selected {
+    color: #474646;
+}
+
 .choice {
     align-items: center;
     border-radius: 100px;
@@ -23,46 +27,8 @@
     width: 50%;
 }
 
-.highlighted-choice {
-    box-shadow: 0 0 6px 1px rgba(195, 51, 51, 0.5);
-    background-color: rgba(249, 249, 249, 0.5);
-    border-radius: 100px;
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    left: 0;
-    opacity: 0.5;
-}
-
-.highlighted-choice-right {
-    animation: right-to-left 0.3s linear forwards;
-    left: 50%;
-}
-
-.highlighted-choice-left {
-    animation: left-to-right 0.3s linear forwards;
-}
-
 .title {
     color: #fff;
     font-weight: 700;
     margin-bottom: 10px;
-}
-
-@keyframes left-to-right {
-    from {
-        left: 50%;
-    }
-    to {
-        left: 0;
-    }
-}
-
-@keyframes right-to-left {
-    from {
-        left: 0;
-    }
-    to {
-        left: 50%;
-    }
 }
