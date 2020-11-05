@@ -1,5 +1,3 @@
-// I tried to make this as resuable as possible for different values,
-// this works for now but would like to make it more robust if I had more time
 export const calculateBackgroundColor = (value: number) => {
     switch (true) {
         case value === 0:
