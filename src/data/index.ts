@@ -26,7 +26,7 @@ export const QUESTION_DATA = {
 
 export const QUESTION_DATA_TWO = {
     title: 'What are the ideal conditions inside an office',
-    questions: [
+    choices: [
         {
             id: 0,
             options: ['Good Pay', 'Bad Pay'],
@@ -40,7 +40,7 @@ export const QUESTION_DATA_TWO = {
         {
             id: 1,
             options: ['Lots of coffee', 'Less coffee'],
-            correct: 'Less coffee',
+            correct: 'Lots of coffee',
         },
     ],
 }

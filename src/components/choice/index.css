@@ -50,3 +50,9 @@
         left: 50%;
     }
 }
+
+@media only screen and (max-width: 500px) {
+    .choices-container {
+        width: 300px !important;
+    }
+}

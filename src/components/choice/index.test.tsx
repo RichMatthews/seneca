@@ -19,11 +19,11 @@ describe('QuestionView', () => {
         expect(getByText('Pizza')).toBeInTheDocument()
     })
 
-    // it('should render ', () => {
-    //     const { getByText } = render(<Choice {...props} />)
-    //     expect(mockSetAnswer).not.toHaveBeenCalled()
-    //     fireEvent.click(getByText('Pizza'))
+    it('should call setAnswer with the right paramater', () => {
+        const { getByText } = render(<Choice {...props} />)
+        expect(mockSetAnswer).not.toHaveBeenCalled()
+        fireEvent.click(getByText('Pizza'))
 
-    //     expect(mockSetAnswer).toHaveBeenCalledWith('Pizza')
-    // })
+        expect(mockSetAnswer).toHaveBeenCalledWith({ choice: 'Pizza', index: 0 })
+    })
 })

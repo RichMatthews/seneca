@@ -2,28 +2,29 @@ import React, { useEffect, useState } from 'react'
 
 import { calculateBackgroundColor } from '../../constants/background-colors'
 
-import { QuestionViewProps, CorrectAnswersState, SetAnswerParams, QuestionChoicesValues } from './types'
+import { SetAnswerParams, QuestionViewProps, QuestionChoicesValues } from './types'
 import { Choice } from '../choice'
 
 import './index.css'
 
-export const QuestionView = ({ correctAnswers, question, setBackground }: any) => {
+export const QuestionView = ({
+    allAnswersCorrect,
+    correctAnswers,
+    questionData,
+    setAllAnswersCorrect,
+    setBackground,
+}: QuestionViewProps) => {
     const [selectedAnswers, setSelectedAnswers] = useState<QuestionChoicesValues[]>([])
-    const [allAnswersCorrect, setAllAnswersCorrect] = useState<boolean>(false)
 
     useEffect(() => {
-        setSelectedAnswers(question)
-    }, [question])
+        setSelectedAnswers(questionData.choices)
+    }, [questionData])
 
-    const setAnswer = ({ choice, index, side }: SetAnswerParams) => {
+    const setAnswer = ({ choice, index }: SetAnswerParams) => {
         if (allAnswersCorrect) return
         let copy = [...selectedAnswers]
 
         copy[index].selected = choice
-        // if (side === 'right') {
-        // } else {
-        //     copy[index].selected = choice.options[0]
-        // }
 
         setSelectedAnswers(copy)
 
@@ -50,10 +51,10 @@ export const QuestionView = ({ correctAnswers, question, setBackground }: any) =
 
     return (
         <div className="container">
-            <div className="title">{question.title}:</div>
+            <div className="title">{questionData.title}:</div>
             <div>
                 {selectedAnswers.map((choice: QuestionChoicesValues, index: number) => (
-                    <Choice choice={choice} index={index} setAnswer={setAnswer} />
+                    <Choice key={choice.id} choice={choice} index={index} setAnswer={setAnswer} />
                 ))}
             </div>
             <div>The answer is {allAnswersCorrect ? 'correct' : 'incorrect'}</div>

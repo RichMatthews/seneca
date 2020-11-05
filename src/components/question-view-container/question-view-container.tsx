@@ -3,68 +3,81 @@ import shuffle from 'shuffle-array'
 
 import { calculateBackgroundColor } from '../../constants/background-colors'
 import { QUESTION_DATA, QUESTION_DATA_TWO } from '../../data'
+import { QuestionSelect } from '../question-select'
 import { QuestionView } from '../question-view'
 
 import './index.css'
 
 export const QuestionViewContainer = () => {
     const [background, setBackground] = useState<string>(calculateBackgroundColor(0))
-    const [question, setQuestion] = useState<number>(0)
-    const [questions, setQuestions] = useState<any>([])
-    const [correctAnswers, setCorrectAnswers] = useState<any[]>([])
+    const [questionNumber, setQuestionNumber] = useState<number>(0)
+    const [questionData, setQuestionData] = useState<{ choices: any; title: string }>(QUESTION_DATA)
+    const [correctAnswers, setCorrectAnswers] = useState<string[]>([])
+    const [allAnswersCorrect, setAllAnswersCorrect] = useState<boolean>(false)
 
     useEffect(() => {
-        // would normally use this to fetch data from an API normally but as this is just a FE task data is hardcoded above
-        // instead I've decided to randomize the choices so that you we don't get 4 correct answeres loaded from the start
-        randomizeChoices()
-    }, [])
+        if (questionNumber === 0) {
+            setQuestionData(QUESTION_DATA)
+            randomizeChoices(QUESTION_DATA)
+        } else {
+            setQuestionData(QUESTION_DATA_TWO)
+            randomizeChoices(QUESTION_DATA_TWO)
+        }
+    }, [questionNumber])
 
-    const randomizeChoices = () => {
-        const questionData: any = question === 0 ? QUESTION_DATA : QUESTION_DATA_TWO
-
-        const shuffleChoicesAndAddInitialSelectedChoice = questionData.choices.map((question: any) => {
-            const shuffled = shuffle(question.options)[0]
-            shuffle(question.options)
-            return { ...question, selected: shuffled }
+    const randomizeChoices = (localQuestionData: { choices: {}[]; title: string }) => {
+        const shuffleChoicesAndAddInitialSelectedChoice = localQuestionData.choices.map((choice: any) => {
+            const randomlySelectedChoice = shuffle(choice.options)[0]
+            shuffle(choice.options)
+            return { ...choice, selected: randomlySelectedChoice }
         })
 
-        setQuestions(shuffleChoicesAndAddInitialSelectedChoice)
-        setCorrectAnswers(shuffleChoicesAndAddInitialSelectedChoice.map((choice: any) => choice.correct))
-        const x = calculateCorrectAnswers(
-            shuffleChoicesAndAddInitialSelectedChoice.map((choice: any) => choice.selected),
-            shuffleChoicesAndAddInitialSelectedChoice.map((choice: any) => choice.correct),
+        setQuestionData({ ...localQuestionData, choices: shuffleChoicesAndAddInitialSelectedChoice })
+
+        const correctAnswers = shuffleChoicesAndAddInitialSelectedChoice.map(
+            (choice: { correct: string }) => choice.correct,
         )
+        const selectedAnswers = shuffleChoicesAndAddInitialSelectedChoice.map(
+            (choice: { selected: string }) => choice.selected,
+        )
+        setCorrectAnswers(correctAnswers)
+
+        const moreThan50PercentOfAnswersCorrect = calculateCorrectAnswers(selectedAnswers, correctAnswers)
 
         // call the function again if answers are higher than 50% as too many are correct from the start
-        if (x > 50) {
-            randomizeChoices()
+        if (moreThan50PercentOfAnswersCorrect > 50) {
+            randomizeChoices(localQuestionData)
         }
     }
 
-    const calculateCorrectAnswers = (sa: any, ca: any) => {
+    const calculateCorrectAnswers = (selectedAnswers: any, _correctAnswers: any) => {
         let correctAnswersTotal: number = 0
-        sa.map((answer: any) => answer).forEach((answer: string, index: number) => {
-            if (answer === ca[index]) {
-                correctAnswersTotal += 1
-            }
-        })
+        selectedAnswers
+            .map((answer: string) => answer)
+            .forEach((answer: string, index: number) => {
+                if (answer === _correctAnswers[index]) {
+                    correctAnswersTotal += 1
+                }
+            })
 
-        return (correctAnswersTotal / sa.length) * 100
+        return (correctAnswersTotal / selectedAnswers.length) * 100
     }
 
-    // obviously all the below stuff is a bit hacky but wanted to give an easy way of showing this is built in a reusable way
     return (
-        <div className="data-container" style={{ background: `linear-gradient(${background})` }}>
-            <div className="question-select">Select which question you would like to see</div>
-            <div className="question-option">
-                <div className={`question-title ${question === 0 ? 'q-selected' : ''}`} onClick={() => setQuestion(0)}>
-                    Animal Cells
-                </div>
-                <div className={`question-title ${question === 0 ? '' : 'q-selected'}`} onClick={() => setQuestion(1)}>
-                    Office
-                </div>
-            </div>
-            <QuestionView correctAnswers={correctAnswers} question={questions} setBackground={setBackground} />
+        <div className="question-view-container" style={{ background: `linear-gradient(${background})` }}>
+            <QuestionSelect
+                questionNumber={questionNumber}
+                setAllAnswersCorrect={setAllAnswersCorrect}
+                setBackground={setBackground}
+                setQuestionNumber={setQuestionNumber}
+            />
+            <QuestionView
+                allAnswersCorrect={allAnswersCorrect}
+                correctAnswers={correctAnswers}
+                questionData={questionData}
+                setAllAnswersCorrect={setAllAnswersCorrect}
+                setBackground={setBackground}
+            />
         </div>
     )
 }

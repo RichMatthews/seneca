@@ -17,13 +17,13 @@ export const Choice = ({ choice, index, setAnswer }: ChoiceComponentProps) => {
         <div className="choices-container" key={choice.id}>
             <div
                 className={`choice ${leftHandSideTextIsSelected ? 'text-selected' : ''}`}
-                onClick={() => setAnswer({ choice: choice.options[0], index, side: 'left' })}
+                onClick={() => setAnswer({ choice: choice.options[0], index })}
             >
                 {choice.options[0]}
             </div>
             <div
                 className={`choice ${!leftHandSideTextIsSelected ? 'text-selected' : ''}`}
-                onClick={() => setAnswer({ choice: choice.options[1], index, side: 'right' })}
+                onClick={() => setAnswer({ choice: choice.options[1], index })}
             >
                 {choice.options[1]}
             </div>

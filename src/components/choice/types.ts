@@ -1,13 +1,16 @@
 interface setAnswerParams {
     choice: string
     index: number
-    side: string
 }
 
 export interface ChoiceComponentProps {
-    choice: any
+    choice: {
+        id: number
+        options: string[]
+        selected: string
+    }
     index: number
-    setAnswer: ({ choice, index, side }: setAnswerParams) => void
+    setAnswer: ({ choice, index }: setAnswerParams) => void
 }
 
 export interface DetermineWhichChoiceToHighlightParameters {
